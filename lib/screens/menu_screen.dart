@@ -259,7 +259,7 @@ class _MenuScreenState extends State<MenuScreen> {
                     ),
                   const SizedBox(height: 8),
                   Row(
-                    mainAxisSize: MainAxis.min,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Image.asset('assets/wajiha_logo.png',
                           width: 22, height: 22, fit: BoxFit.contain),

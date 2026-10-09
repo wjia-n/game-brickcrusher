@@ -145,16 +145,6 @@ class _GameScreenState extends State<GameScreen>
     Navigator.of(context).pop();
   }
 
-  String _modeLine() {
-    final m = _engine.mode;
-    if (m == CrusherMode.scoreAttack) {
-      final s = _engine.timeLeft.ceil();
-      return '⏱ ${s ~/ 60}:${(s % 60).toString().padLeft(2, '0')}';
-    }
-    final tag = m == CrusherMode.endless ? 'ENDLESS' : 'CAMPAIGN';
-    return '$tag • LV ${_engine.level}';
-  }
-
   int _bestForMode() {
     switch (_engine.mode) {
       case CrusherMode.endless:
@@ -189,7 +179,7 @@ class _GameScreenState extends State<GameScreen>
                             _engine.arena = Size(
                                 constraints.maxWidth, constraints.maxHeight);
                             return AnimatedBuilder(
-                              animation: _ticker,
+                              animation: _engine,
                               builder: (_, _) => GestureDetector(
                                 behavior: HitTestBehavior.opaque,
                                 onHorizontalDragUpdate: (d) {
@@ -202,7 +192,7 @@ class _GameScreenState extends State<GameScreen>
                                 child: CustomPaint(
                                   painter: _CrusherPainter(
                                     engine: _engine,
-                                    theme: t,
+                                    t: t,
                                     paddleStyle: PaddleStyles
                                         .all[_s.paddleStyle],
                                     ballStyle:
