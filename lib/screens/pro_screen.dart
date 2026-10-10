@@ -33,26 +33,10 @@ class _ProScreenState extends State<ProScreen> {
   @override
   void initState() {
     super.initState();
-    widget.store.proPurchased.addListener(_onPro);
     widget.store.lastThanks.addListener(_onThanks);
   }
 
-  void _onPro() {
-    if (widget.store.proPurchased.value && mounted) {
-      widget.settings.setPro(true);
-      widget.audio.win();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('PRO unlocked — smash everything!',
-              style: Workshop.body(15, theme: _t)),
-          backgroundColor: _t.bgDeep,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      widget.store.proPurchased.value = false;
-    }
-  }
-
+  
   void _onThanks() {
     final msg = widget.store.lastThanks.value;
     if (msg == null || !mounted) return;
@@ -69,7 +53,6 @@ class _ProScreenState extends State<ProScreen> {
 
   @override
   void dispose() {
-    widget.store.proPurchased.removeListener(_onPro);
     widget.store.lastThanks.removeListener(_onThanks);
     super.dispose();
   }
@@ -104,16 +87,7 @@ class _ProScreenState extends State<ProScreen> {
                   const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
               child: Column(
                 children: [
-                  _ComparisonCard(theme: t, isPro: s.isPro),
-                  const SizedBox(height: 16),
-                  _BuyCard(
-                    theme: t,
-                    settings: s,
-                    store: store,
-                    audio: widget.audio,
-                  ),
-                  const SizedBox(height: 16),
-                  _TipsCard(
+                                    _TipsCard(
                     theme: t,
                     store: store,
                     audio: widget.audio,
@@ -131,232 +105,9 @@ class _ProScreenState extends State<ProScreen> {
 
 // ---------------------------------------------------------------------------
 /// Free vs Pro comparison table — buyers see the big difference.
-class _ComparisonCard extends StatelessWidget {
-  final CrusherThemeDef theme;
-  final bool isPro;
-  const _ComparisonCard({required this.theme, required this.isPro});
 
-  @override
-  Widget build(BuildContext context) {
-    const rows = [
-      ('Complete brick-breaker game', true, true),
-      ('Catch-and-smash gameplay', true, true),
-      ('Chill & Classic difficulties', true, true),
-      ('Campaign & Endless modes', true, true),
-      ('Renameable player profile', true, true),
-      ('Music & sound effects', true, true),
-      ('Workshop themes', '4', '14'),
-      ('Paddle styles', '3', '8'),
-      ('Ball styles', '3', '8'),
-      ('Brick styles', '3', '8'),
-      ('Custom theme creator', false, true),
-      ('Wild & Insane difficulties', false, true),
-      ('Score Attack mode', false, true),
-    ];
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            theme.bg.withValues(alpha: 0.85),
-            theme.bgDeep.withValues(alpha: 0.9),
-          ],
-        ),
-        border: Border.all(color: theme.accent, width: 2),
-      ),
-      child: Column(
-        children: [
-          Text('Free vs PRO', style: Workshop.display(20, theme: theme)),
-          const SizedBox(height: 4),
-          Text(
-            'One purchase. Yours forever.',
-            style: Workshop.body(13,
-                theme: theme,
-                color: theme.ink.withValues(alpha: 0.7)),
-          ),
-          const SizedBox(height: 12),
-          // Header row.
-          Row(
-            children: [
-              const Expanded(flex: 5, child: SizedBox()),
-              Expanded(
-                  flex: 2,
-                  child: Text('FREE',
-                      style: Workshop.label(12, theme: theme),
-                      textAlign: TextAlign.center)),
-              Expanded(
-                  flex: 2,
-                  child: Text('PRO',
-                      style: Workshop.label(12, theme: theme),
-                      textAlign: TextAlign.center)),
-            ],
-          ),
-          const Divider(height: 14),
-          for (final r in rows)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 5,
-                    child: Text(r.$1, style: Workshop.body(13, theme: theme)),
-                  ),
-                  Expanded(flex: 2, child: _Cell(value: r.$2, theme: theme)),
-                  Expanded(flex: 2, child: _Cell(value: r.$3, theme: theme)),
-                ],
-              ),
-            ),
-          if (isPro)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  color: theme.accent.withValues(alpha: 0.25),
-                  border: Border.all(color: theme.accentLight),
-                ),
-                child: Text('✦ PRO ACTIVE ✦',
-                    style: Workshop.label(14, theme: theme)),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Cell extends StatelessWidget {
-  final Object value; // bool | String
-  final CrusherThemeDef theme;
-  const _Cell({required this.value, required this.theme});
-
-  @override
-  Widget build(BuildContext context) {
-    if (value is bool) {
-      final v = value as bool;
-      return Text(
-        v ? '✓' : '—',
-        style: Workshop.body(15,
-            theme: theme,
-            color: v
-                ? theme.accentLight
-                : theme.ink.withValues(alpha: 0.4)),
-        textAlign: TextAlign.center,
-      );
-    }
-    return Text(
-      value as String,
-      style: Workshop.label(12, theme: theme),
-      textAlign: TextAlign.center,
-    );
-  }
-}
 
 // ---------------------------------------------------------------------------
-class _BuyCard extends StatelessWidget {
-  final CrusherThemeDef theme;
-  final CrusherSettings settings;
-  final StoreService store;
-  final CrusherAudio audio;
-  const _BuyCard({
-    required this.theme,
-    required this.settings,
-    required this.store,
-    required this.audio,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final pro = store.proProduct;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            theme.bg.withValues(alpha: 0.85),
-            theme.bgDeep.withValues(alpha: 0.9),
-          ],
-        ),
-        border: Border.all(color: theme.accent, width: 2),
-      ),
-      child: Column(
-        children: [
-          Text('Unlock PRO', style: Workshop.display(20, theme: theme)),
-          const SizedBox(height: 8),
-          if (settings.isPro)
-            Text('You already own PRO — thank you!',
-                style: Workshop.body(14, theme: theme),
-                textAlign: TextAlign.center)
-          else if (!store.storeReady)
-            Text(
-              store.error ?? 'Available after store setup.',
-              style: Workshop.body(14,
-                  theme: theme,
-                  color: theme.ink.withValues(alpha: 0.7)),
-              textAlign: TextAlign.center,
-            )
-          else if (pro != null) ...[
-            Text(pro.description.isNotEmpty
-                ? pro.description
-                : 'Unlock everything in Brick Crusher, forever.',
-                style: Workshop.body(14, theme: theme),
-                textAlign: TextAlign.center),
-            const SizedBox(height: 12),
-            ValueListenableBuilder<bool>(
-              valueListenable: store.purchaseInProgress,
-              builder: (_, busy, _) => PlankButton(
-                label: busy ? 'Working…' : 'Get PRO — ${pro.price}',
-                width: 260,
-                theme: theme,
-                onTap: busy
-                    ? () {}
-                    : () {
-                        audio.click();
-                        store.buyPro();
-                      },
-              ),
-            ),
-          ],
-          ValueListenableBuilder<String?>(
-            valueListenable: store.purchaseError,
-            builder: (_, err, _) => err == null
-                ? const SizedBox.shrink()
-                : Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(err,
-                        style: Workshop.body(13,
-                            theme: theme,
-                            color: const Color(0xFFE08A8A)),
-                        textAlign: TextAlign.center),
-                  ),
-          ),
-          const SizedBox(height: 10),
-          TextButton(
-            onPressed: () {
-              audio.click();
-              store.restore();
-            },
-            child: Text('Restore purchases',
-                style: Workshop.label(13, theme: theme)),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-/// Consumable tips — pure support, with real store prices.
 class _TipsCard extends StatelessWidget {
   final CrusherThemeDef theme;
   final StoreService store;

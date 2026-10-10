@@ -73,7 +73,7 @@ class CrusherSettings extends ChangeNotifier {
   int paddleStyle = 0;
   int ballStyle = 0;
   int brickStyle = 0;
-  bool isPro = false;
+  bool isPro = true; // everything unlocked — no Pro version
 
   // Player profile fields (persisted inside the JSON profile string).
   String playerName = defaultName;
@@ -180,7 +180,7 @@ class CrusherSettings extends ChangeNotifier {
     paddleStyle = (p.getInt(_kPaddle) ?? 0).clamp(0, PaddleStyles.all.length - 1);
     ballStyle = (p.getInt(_kBall) ?? 0).clamp(0, BallStyles.all.length - 1);
     brickStyle = (p.getInt(_kBrick) ?? 0).clamp(0, BrickStyles.all.length - 1);
-    isPro = p.getBool(_kIsPro) ?? false;
+    isPro = true; // everything unlocked
     hasCustomTheme = p.getInt(_kCustomId) == 1;
     for (final k in _defaultCustomColors.keys) {
       customColors[k] =
