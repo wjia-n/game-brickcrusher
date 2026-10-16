@@ -6,6 +6,7 @@ import '../services/settings_service.dart';
 import '../theme/crusher_themes.dart';
 import '../theme/workshop.dart';
 import 'pro_screen.dart';
+import '../transfer/transfer_ui.dart';
 
 /// Settings — workshop drawer metaphor, theme-aware.
 class SettingsScreen extends StatefulWidget {
@@ -104,6 +105,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+              TransferSaveTile(gameSlug: 'brickcrusher'),
                 _SectionTitle('Sound', t),
                 SettingRow(
                   theme: t,
